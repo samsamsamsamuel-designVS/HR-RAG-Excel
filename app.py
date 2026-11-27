@@ -6,6 +6,7 @@ import streamlit as st
 from openai import APIConnectionError, APIStatusError, AuthenticationError, RateLimitError
 
 from config import load_settings
+from sample_dataset import sample_payloads
 from data_store import DataStore
 from documents import DocumentStore
 from exports import results_to_excel
@@ -33,8 +34,12 @@ with st.sidebar:
     render_brand()
     with st.container(key='data_upload'):
         st.subheader('Data files')
+        use_sample = st.toggle('Use sample HR dataset', key='use_sample',
+                               help='Try 30 fictional employees and their performance reviews. Turn off to use your uploads.')
+        if use_sample:
+            st.caption('Demo data · 30 fictional employees · 2 linked tables')
         uploads = st.file_uploader('Upload CSV / Excel files', type=['csv', 'xlsx', 'xls'],
-                                   accept_multiple_files=True, label_visibility='collapsed',
+                                   accept_multiple_files=True, label_visibility='collapsed', disabled=use_sample,
                                    max_upload_size=settings.max_file_mb)
         st.caption(f'CSV, XLSX, XLS · Up to {settings.max_files} files · {settings.max_file_mb} MB each')
     with st.container(key='policy_upload'):
@@ -55,7 +60,7 @@ with st.sidebar:
         st.rerun()
 
 # Rebuild only when file contents change. Never share user data via a global cache.
-payloads = [(file.name, file.getvalue()) for file in uploads]
+payloads = sample_payloads() if use_sample else [(file.name, file.getvalue()) for file in uploads]
 fingerprint = tuple((name, hashlib.sha256(content).hexdigest()) for name, content in payloads)
 if fingerprint != st.session_state.fingerprint:
     if st.session_state.store is not None:
@@ -109,7 +114,7 @@ if documents:
         st.caption('PDF rules are provided to the AI when it plans queries. '
                    'Example: “Use the performance policy to classify employees and show the criteria applied.”')
 if store:
-    with st.expander('Explore uploaded data'):
+    with st.expander('Explore data'):
         selected = st.selectbox('Table', range(len(store.tables)), format_func=lambda i:
                                f'{store.tables[i]["table"]} — {store.tables[i]["file"]}'
                                + (f' / {store.tables[i]["sheet"]}' if store.tables[i]['sheet'] else ''))
@@ -178,9 +183,13 @@ def render_message(message, index):
 for index, message in enumerate(st.session_state.messages):
     render_message(message, index)
 
-st.html('<p class="workspace-footer">Answers grounded in your uploaded files</p>')
+st.html('<p class="workspace-footer">Answers grounded in your selected data and documents</p>')
 
-question = st.chat_input('Ask a question about your files…',
+if use_sample and store:
+    st.info('Using fictional sample HR data. Try: “How many employees are in each department?” '
+            'or “What is the average performance score by department?”')
+
+question = st.chat_input('Ask a question about your data…',
                          disabled=not ((store or documents) and settings.api_key and settings.base_url)
                          or bool(st.session_state.get('pdf_error') or st.session_state.get('load_error')),
                          max_chars=settings.question_chars)

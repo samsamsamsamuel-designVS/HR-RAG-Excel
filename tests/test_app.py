@@ -116,6 +116,27 @@ class DataTests(unittest.TestCase):
 
 
 class UITests(unittest.TestCase):
+    def test_sample_data_can_be_enabled_and_removed(self):
+        app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / 'app.py')).run(timeout=20)
+        self.assertIsNone(app.session_state['store'])
+        app.toggle(key='use_sample').set_value(True).run()
+        self.assertEqual(len(app.exception), 0)
+        store = app.session_state['store']
+        self.assertEqual([t['rows'] for t in store.tables], [30, 30])
+        frame, _, _ = store.query(
+            'SELECT department, COUNT(*) AS headcount FROM table_1 '
+            'JOIN table_2 USING (employee_id) GROUP BY department')
+        self.assertEqual(len(frame), 5)
+        self.assertEqual(frame['headcount'].tolist(), [6] * 5)
+        app.session_state['messages'] = [{'role': 'assistant', 'content': 'Old answer'}]
+        app.run()
+        self.assertIs(app.session_state['store'], store)
+        app.toggle(key='use_sample').set_value(False).run()
+        self.assertEqual(len(app.exception), 0)
+        self.assertIsNone(app.session_state['store'])
+        self.assertEqual(app.session_state['messages'], [])
+        self.assertTrue(app.chat_input[0].disabled)
+
     def test_initial_screen(self):
         app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / 'app.py')).run(timeout=20)
         self.assertEqual(len(app.exception), 0)

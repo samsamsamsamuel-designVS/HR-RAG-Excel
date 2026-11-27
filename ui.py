@@ -26,7 +26,7 @@ def render_status(store, documents, ready):
     tables = len(store.tables) if store else 0
     pdfs = len(documents.documents) if documents else 0
     rows = sum(t['rows'] for t in store.tables) if store else 0
-    status = 'Ready' if ready else 'Add files to begin' if not (tables or pdfs) else 'Setup needed'
+    status = 'Ready' if ready else 'Choose data to begin' if not (tables or pdfs) else 'Setup needed'
     st.html(f'<div class="workspace-status"><div class="source-chips">'
             f'<span class="source-chip">{tables} data {"table" if tables == 1 else "tables"}</span>'
             f'<span class="source-chip">{pdfs} PDF {"policy" if pdfs == 1 else "policies"}</span>'
@@ -37,4 +37,4 @@ def render_status(store, documents, ready):
 def render_empty_state():
     st.html('<div class="empty-workspace"><span class="empty-symbol" aria-hidden="true">↗</span>'
             '<h2>Your next answer starts here.</h2>'
-            '<p>Add a spreadsheet to explore your data. Include a PDF documents to put the results in context.</p>')
+            '<p>Try the sample HR dataset in the sidebar or upload a spreadsheet. Add PDF documents for context.</p>')

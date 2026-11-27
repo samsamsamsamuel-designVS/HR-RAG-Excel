@@ -34,6 +34,12 @@ access to your platform’s `azure.claude-fable-5` model. Override it via `AI_MO
 The `openai` Python package is used only as an HTTP SDK for your configured gateway;
 no OpenAI key is used, and no default OpenAI endpoint is allowed.
 
+To try the app without a file, turn on **Use sample HR dataset** in the sidebar.
+This loads 30 fictional employees and a linked performance table. Try asking for
+headcount, average salary, or average performance by department. Turn the option
+off to return to uploads. Switching data clears the conversation. Browsing sample
+data works offline; AI answers still require a working API connection.
+
 Example questions:
 
 - What are total sales by region, ordered highest first?
