@@ -1,4 +1,4 @@
-# HR RAG Excel — Claude gateway edition
+# HR RAG Excel — GPT-5.6 Sol gateway edition
 
 A commented Python + Streamlit application using Pandas, DuckDB, and your AI platform’s OpenAI-compatible Chat Completions API.
 Upload multiple `.csv`, `.xlsx`, or `.xls` files, ask questions conversationally, and
@@ -30,7 +30,7 @@ streamlit run app.py
 
 Open the localhost URL printed by Streamlit. Upload files, inspect their inferred
 data, and type a question. API calls require
-access to your platform’s `azure.claude-fable-5` model. Override it via `AI_MODEL`.
+access to your platform’s `gpt-5.6-sol` model. Override it via `AI_MODEL`.
 The `openai` Python package is used only as an HTTP SDK for your configured gateway;
 no OpenAI key is used, and no default OpenAI endpoint is allowed.
 

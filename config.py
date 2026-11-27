@@ -47,7 +47,7 @@ def load_settings() -> Settings:
     return Settings(
         api_key=os.getenv('AI_API_KEY', '').strip(),
         base_url=os.getenv('AI_BASE_URL', '').strip(),
-        model=os.getenv('AI_MODEL', 'azure.claude-fable-5').strip(),
+        model=os.getenv('AI_MODEL', 'gpt-5.6-sol').strip(),
         api_timeout=number('AI_TIMEOUT_SECONDS', 60),
         max_files=number('MAX_FILES', 10),
         max_file_mb=number('MAX_FILE_MB', 20),

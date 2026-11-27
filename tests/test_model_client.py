@@ -24,7 +24,7 @@ class GatewayTests(unittest.TestCase):
 
     def response(self, content, finish='stop'):
         return {'id': 'test', 'object': 'chat.completion', 'created': 0,
-                'model': 'azure.claude-fable-5', 'choices': [
+                'model': 'gpt-5.6-sol', 'choices': [
                     {'index': 0, 'finish_reason': finish,
                      'message': {'role': 'assistant', 'content': content}}]}
 
@@ -37,7 +37,7 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual(requests[0].headers['x-api-key'], 'gateway-test-key')
         self.assertNotIn('authorization', requests[0].headers)
         body = json.loads(requests[0].content)
-        self.assertEqual(body['model'], 'azure.claude-fable-5')
+        self.assertEqual(body['model'], 'gpt-5.6-sol')
         self.assertIn('schema', body['messages'][0]['content'])
         self.assertNotIn('store', body)
         self.assertNotIn('response_format', body)
@@ -60,6 +60,6 @@ class GatewayTests(unittest.TestCase):
 
     def test_content_filter_not_completed(self):
         with self.client([self.response('', 'content_filter')], []) as client:
-            response = client.create(model='azure.claude-fable-5', instructions='Answer',
+            response = client.create(model='gpt-5.6-sol', instructions='Answer',
                                      input='Question', max_output_tokens=100)
         self.assertEqual(response.status, 'incomplete')
